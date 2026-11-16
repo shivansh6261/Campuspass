@@ -1,69 +1,163 @@
-import Image from "next/image";
+
+import Navbar from "@/components/Navbar";
+import EventCard from "@/components/EventCard";
+import { events } from "@/lib/events";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.js
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen bg-[#080D1D] text-white">
+      <Navbar />
+
+      <main>
+        {/* HERO SECTION */}
+        <section className="relative isolate overflow-hidden px-5 py-24 md:py-36">
+
+          {/* Background glowing circles */}
+          <div className="pointer-events-none absolute -top-32 -left-32 -z-10 h-96 w-96 rounded-full bg-violet-600/30 blur-[110px]" />
+
+          <div className="pointer-events-none absolute top-20 -right-32 -z-10 h-96 w-96 rounded-full bg-cyan-500/20 blur-[110px]" />
+
+          <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top,#172554_0%,#080D1D_65%)]" />
+
+          <div className="mx-auto max-w-6xl text-center">
+
+            {/* College Badge */}
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-500/10 px-5 py-2 text-sm font-medium tracking-wider text-violet-200">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-400" />
+              SGSITS INDORE
+            </div>
+
+            {/* Main Heading */}
+            <h1 className="mx-auto max-w-5xl text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
+              Your Campus.
+              <br />
+              <span className="bg-gradient-to-r from-cyan-300 via-violet-400 to-pink-400 bg-clip-text text-transparent">
+                Your Experience.
+              </span>
+            </h1>
+
+            <p className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-slate-300 md:text-xl">
+              Discover exciting college events, connect with
+              amazing clubs, and create unforgettable memories.
+              All your campus experiences in one place.
+            </p>
+
+            {/* Action Buttons */}
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
+              <a
+                href="#events"
+                className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-8 py-4 font-semibold text-white shadow-lg shadow-violet-600/25 transition duration-300 hover:-translate-y-1 hover:shadow-violet-500/50"
+              >
+                Explore Events ↗
+              </a>
+
+              <a
+                href="#about"
+                className="rounded-xl border border-white/20 bg-white/5 px-8 py-4 font-semibold text-white backdrop-blur transition hover:border-cyan-400/50 hover:bg-white/10"
+              >
+                How It Works
+              </a>
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="mx-auto mt-20 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
+
+              {[
+                { number: "01", title: "Discover Events" },
+                { number: "02", title: "Register Easily" },
+                { number: "03", title: "Get Digital Pass" },
+              ].map((item) => (
+                <div
+                  key={item.number}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-violet-400/40 hover:bg-white/10"
+                >
+                  <h3 className="text-3xl font-bold text-cyan-400">
+                    {item.number}
+                  </h3>
+                  <p className="mt-2 font-medium text-slate-200">
+                    {item.title}
+                  </p>
+                </div>
+              ))}
+
+            </div>
+          </div>
+        </section>
+
+        {/* EVENTS SECTION */}
+        <section
+          id="events"
+          className="relative scroll-mt-24 bg-[#0D1428] px-5 py-20"
+        >
+          <div className="mx-auto max-w-6xl">
+
+            <div className="mb-12">
+              <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
+                Explore What's Happening
+              </p>
+
+              <h2 className="text-4xl font-bold md:text-5xl">
+                Upcoming{" "}
+                <span className="bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent">
+                  Events
+                </span>
+              </h2>
+
+              <p className="mt-4 max-w-xl text-slate-400">
+                From coding competitions to cultural festivals,
+                discover what's happening across SGSITS clubs.
+              </p>
+            </div>
+
+            {/* Existing Event Cards */}
+            {events.length > 0 ? (
+              <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+                {events.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-slate-400">
+                No upcoming events yet. Stay tuned!
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ABOUT SECTION */}
+        <section
+          id="about"
+          className="scroll-mt-24 px-5 py-24"
+        >
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-cyan-400">
+              One Campus. Endless Possibilities.
+            </p>
+
+            <h2 className="text-3xl font-bold md:text-5xl">
+              Everything You Need.
+              <br />
+              <span className="text-violet-400">
+                One Platform.
+              </span>
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-2xl leading-relaxed text-slate-400">
+              CampusPass brings college clubs, organizers,
+              and students together. Explore events,
+              register for activities, and access your
+              digital passes with ease.
+            </p>
+          </div>
+        </section>
       </main>
+ 
+      <footer className="border-t border-white/10 px-5 py-8 text-center text-sm text-slate-500">
+        © 2026 CampusPass • SGSITS Indore
+      </footer>
     </div>
   );
 }
