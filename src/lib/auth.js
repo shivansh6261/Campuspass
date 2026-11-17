@@ -3,7 +3,6 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { createHash } from "node:crypto";
-
 import { prisma } from "@/lib/prisma";
 
 export async function getCurrentStudent() {
@@ -31,10 +30,13 @@ export async function getCurrentStudent() {
           name: true,
           email: true,
           enrollment: true,
+          phone: true,
           department: true,
           year: true,
           verificationStatus: true,
           emailVerifiedAt: true,
+          collegeVerifiedAt: true,
+          createdAt: true,
         },
       },
     },
@@ -44,7 +46,6 @@ export async function getCurrentStudent() {
     return null;
   }
 
-  // Check expiration
   if (session.expiresAt <= new Date()) {
     return null;
   }
