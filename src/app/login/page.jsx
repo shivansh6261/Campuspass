@@ -116,8 +116,17 @@ export default function LoginPage() {
         }));
 
         // Redirect after login
-        router.replace("/");
-        router.refresh();
+       const role = data.student?.role;
+
+if (role === "ADMIN") {
+  router.replace("/admin");
+} else if (role === "ORGANIZER") {
+  router.replace("/organizer");
+} else {
+  router.replace("/student");
+}
+
+router.refresh();
 
       } catch (err) {
         console.error("Login request failed:", err);

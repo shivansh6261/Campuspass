@@ -7,45 +7,153 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ====================================
+// ENUMS
+// ====================================
+
 enum VerificationStatus {
   PENDING
   APPROVED
   REJECTED
 }
 
-model Student {
-  id         String @id @default(cuid())
-  name       String
-  email      String @unique
-  enrollment String @unique
-  phone      String
-  department String
-  year       String
+enum UserRole {
+  STUDENT
+  ORGANIZER
+  ADMIN
+}
 
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum OrganizerRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ====================================
+// STUDENT
+// ====================================
+
+model Student {
+  id           String @id @default(cuid())
+  name         String
+  email        String @unique
+  enrollment   String @unique
+  phone        String
+  department   String
+  year         String
   passwordHash String
 
-  emailVerifiedAt DateTime?
-
+  emailVerifiedAt    DateTime?
   verificationStatus VerificationStatus @default(PENDING)
   collegeVerifiedAt  DateTime?
+
+  role          UserRole      @default(STUDENT)
+  accountStatus AccountStatus @default(ACTIVE)
+
+  sessions        Session[]
+  clubMemberships ClubMembership[]
+
+  organizerRequests OrganizerRequest[] @relation("OrganizerApplicant")
+  reviewedRequests  OrganizerRequest[] @relation("OrganizerReviewer")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sessions Session[]
+  @@index([role])
+  @@index([accountStatus])
 }
 
-model Session {
-  id String @id @default(cuid())
+// ====================================
+// SESSION
+// ====================================
 
+model Session {
+  id        String @id @default(cuid())
   studentId String
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   tokenHash String   @unique
   expiresAt DateTime
-
   createdAt DateTime @default(now())
 
   @@index([studentId])
   @@index([expiresAt])
+}
+
+// ====================================
+// CLUB
+// ====================================
+
+model Club {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  logoUrl     String?
+
+  isActive Boolean @default(true)
+
+  memberships       ClubMembership[]
+  organizerRequests OrganizerRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ====================================
+// CLUB MEMBERSHIP
+// ====================================
+
+model ClubMembership {
+  id        String @id @default(cuid())
+  studentId String
+  clubId    String
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  club    Club    @relation(fields: [clubId], references: [id], onDelete: Restrict)
+
+  isActive   Boolean  @default(true)
+  approvedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, clubId])
+  @@index([clubId, isActive])
+}
+
+// ====================================
+// ORGANIZER REQUEST
+// ====================================
+
+model OrganizerRequest {
+  id        String @id @default(cuid())
+  studentId String
+  clubId    String
+
+  student Student @relation("OrganizerApplicant", fields: [studentId], references: [id], onDelete: Restrict)
+  club    Club    @relation(fields: [clubId], references: [id], onDelete: Restrict)
+
+  status OrganizerRequestStatus @default(PENDING)
+  reason String?
+
+  reviewedById String?
+
+  reviewer Student? @relation("OrganizerReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  reviewNote String?
+  reviewedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([studentId, clubId])
+  @@index([status])
+  @@index([clubId, status])
 }

@@ -12,9 +12,7 @@ export async function getCurrentStudent() {
     "campuspass_session"
   )?.value;
 
-  if (!token) {
-    return null;
-  }
+  if (!token) return null;
 
   const tokenHash = createHash("sha256")
     .update(token)
@@ -22,7 +20,6 @@ export async function getCurrentStudent() {
 
   const session = await prisma.session.findUnique({
     where: { tokenHash },
-
     include: {
       student: {
         select: {
@@ -33,6 +30,8 @@ export async function getCurrentStudent() {
           phone: true,
           department: true,
           year: true,
+          role: true,
+          accountStatus: true,
           verificationStatus: true,
           emailVerifiedAt: true,
           collegeVerifiedAt: true,
@@ -42,11 +41,13 @@ export async function getCurrentStudent() {
     },
   });
 
-  if (!session) {
+  if (!session) return null;
+
+  if (session.expiresAt <= new Date()) {
     return null;
   }
 
-  if (session.expiresAt <= new Date()) {
+  if (session.student.accountStatus !== "ACTIVE") {
     return null;
   }
 

@@ -6,11 +6,8 @@ import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 
-// export const runtime = "nodejs";
-
 const SESSION_DURATION = 7 * 24 * 60 * 60;
 
-// Validate login input
 const loginSchema = z.object({
   email: z.email().trim().toLowerCase(),
   password: z.string().min(1),
@@ -20,7 +17,6 @@ export async function POST(request) {
   try {
     const body = await request.json();
 
-    // Step 1: Validate data
     const result = loginSchema.safeParse(body);
 
     if (!result.success) {
@@ -35,12 +31,10 @@ export async function POST(request) {
 
     const { email, password } = result.data;
 
-    // Step 2: Find student
     const student = await prisma.student.findUnique({
       where: { email },
     });
 
-    // Do not reveal whether email exists
     if (!student) {
       return NextResponse.json(
         {
@@ -51,13 +45,12 @@ export async function POST(request) {
       );
     }
 
-    // Step 3: Verify password
-    const passwordValid = await bcrypt.compare(
+    const validPassword = await bcrypt.compare(
       password,
       student.passwordHash
     );
 
-    if (!passwordValid) {
+    if (!validPassword) {
       return NextResponse.json(
         {
           success: false,
@@ -67,10 +60,18 @@ export async function POST(request) {
       );
     }
 
-    // Step 4: Generate cryptographically secure token
+    if (student.accountStatus !== "ACTIVE") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Your account is suspended.",
+        },
+        { status: 403 }
+      );
+    }
+
     const sessionToken = randomBytes(32).toString("hex");
 
-    // Store only a hash of the token in database
     const tokenHash = createHash("sha256")
       .update(sessionToken)
       .digest("hex");
@@ -79,7 +80,6 @@ export async function POST(request) {
       Date.now() + SESSION_DURATION * 1000
     );
 
-    // Step 5: Save session in database
     await prisma.session.create({
       data: {
         studentId: student.id,
@@ -88,7 +88,6 @@ export async function POST(request) {
       },
     });
 
-    // Step 6: Prepare response
     const response = NextResponse.json({
       success: true,
       message: "Login successful.",
@@ -96,11 +95,11 @@ export async function POST(request) {
         id: student.id,
         name: student.name,
         email: student.email,
+        role: student.role,
         verificationStatus: student.verificationStatus,
       },
     });
 
-    // Step 7: Set secure session cookie
     response.cookies.set(
       "campuspass_session",
       sessionToken,
@@ -116,12 +115,12 @@ export async function POST(request) {
     return response;
 
   } catch (error) {
-    console.error("Login request failed");
+    console.error("Login failed:", error);
 
     return NextResponse.json(
       {
         success: false,
-        message: "Unable to sign in. Please try again.",
+        message: "Unable to sign in.",
       },
       { status: 500 }
     );
