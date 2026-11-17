@@ -28,12 +28,15 @@ export default function LoginPage() {
     "mb-2 block text-sm font-medium text-slate-300";
 
   function handleChange(e) {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-    setError("");
-  }
+  const { name, value } = e.target;
+
+  setForm((previous) => ({
+    ...previous,
+    [name]: value,
+  }));
+
+  setError("");
+}
 
   function handleSubmit(e) {
     e.preventDefault();

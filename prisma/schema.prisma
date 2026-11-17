@@ -1,0 +1,35 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Student {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  enrollment     String   @unique
+  phone          String
+  department     String
+  year           String
+
+  passwordHash   String
+
+  emailVerifiedAt DateTime?
+
+  verificationStatus VerificationStatus @default(PENDING)
+  collegeVerifiedAt  DateTime?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
