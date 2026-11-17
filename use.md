@@ -73,3 +73,15 @@ create route.js
   }'
 
   ```
+
+  npx prisma migrate dev --name add_student_sessions
+  npx prisma generate
+
+  ```
+create login api
+```
+mkdir -p src/app/api/auth/login
+
+```
+create login route.js
+
