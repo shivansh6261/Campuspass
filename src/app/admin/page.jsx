@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import { requireAdmin } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 async function AdminContent() {
   const admin = await requireAdmin();
@@ -91,14 +92,18 @@ async function AdminContent() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#111B30] p-6">
+          <Link
+            href="/admin/club-management"
+            className="rounded-2xl border border-violet-500/20 bg-[#111B30] p-6 transition hover:border-violet-400"
+          >
             <h3 className="text-lg font-semibold">
-              Manage Clubs
+              Club & Organizer Management
             </h3>
+
             <p className="mt-2 text-sm text-slate-400">
-              Manage approved college clubs.
+              Add clubs and approve organizer applications.
             </p>
-          </div>
+          </Link>
 
           <div className="rounded-2xl border border-white/10 bg-[#111B30] p-6">
             <h3 className="text-lg font-semibold">

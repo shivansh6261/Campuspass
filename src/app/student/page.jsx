@@ -42,17 +42,17 @@ async function StudentContent() {
             </p>
           </div>
 
-          <Link
-            href="/profile"
-            className="rounded-2xl border border-cyan-500/20 bg-[#111B30] p-6 transition hover:border-cyan-400"
-          >
-            <h2 className="text-xl font-semibold">
-              My Profile
-            </h2>
-            <p className="mt-2 text-sm text-slate-400">
-              View and update your student details.
-            </p>
-          </Link>
+<Link
+  href="/student/apply-organizer"
+  className="rounded-2xl border border-violet-500/20 bg-[#111B30] p-6 transition hover:border-violet-400"
+>
+  <h2 className="text-xl font-semibold">
+    Become an Organizer
+  </h2>
+  <p className="mt-2 text-sm text-slate-400">
+    Apply to manage events for your college club.
+  </p>
+</Link>
 
         </div>
 
