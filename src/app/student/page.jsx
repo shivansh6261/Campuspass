@@ -6,6 +6,7 @@ import { requireStudent } from "@/lib/authorization";
 
 async function StudentContent() {
   const student = await requireStudent();
+  
 
   return (
     <main className="min-h-screen bg-[#080D1D] px-5 py-12 text-white">

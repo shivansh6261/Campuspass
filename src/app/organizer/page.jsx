@@ -2,6 +2,7 @@
 import { Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import { requireOrganizer } from "@/lib/authorization";
+import Link from "next/link";
 
 async function OrganizerContent() {
   const { student, memberships } =
@@ -48,14 +49,21 @@ async function OrganizerContent() {
 
         <div className="mt-10 grid gap-5 md:grid-cols-3">
 
-          <div className="rounded-2xl border border-white/10 bg-[#111B30] p-6">
+
+          <Link
+            href="/organizer/events/new"
+            className="rounded-2xl border border-violet-500/20 bg-[#111B30] p-6 transition hover:border-violet-400"
+          >
             <h3 className="text-lg font-semibold">
               Create Event
             </h3>
+
             <p className="mt-2 text-sm text-slate-400">
-              Event creation will be added next.
+              Create a new event for your approved club.
             </p>
-          </div>
+          </Link>
+          
+
 
           <div className="rounded-2xl border border-white/10 bg-[#111B30] p-6">
             <h3 className="text-lg font-semibold">

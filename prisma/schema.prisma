@@ -34,6 +34,13 @@ enum OrganizerRequestStatus {
   REJECTED
 }
 
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
 // ====================================
 // STUDENT
 // ====================================
@@ -63,6 +70,8 @@ model Student {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  createdEvents Event[] @relation("EventCreator")
 
   @@index([role])
   @@index([accountStatus])
@@ -104,6 +113,8 @@ model Club {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  events Event[]
 }
 
 // ====================================
@@ -156,4 +167,42 @@ model OrganizerRequest {
   @@unique([studentId, clubId])
   @@index([status])
   @@index([clubId, status])
+}
+
+// ============================
+// Event model 
+// ============================
+
+model Event {
+  id String @id @default(cuid())
+
+  title       String
+  description String  @db.Text
+  bannerUrl   String?
+
+  venue String
+
+  startAt              DateTime
+  endAt                DateTime
+  registrationDeadline DateTime
+
+  capacity Int
+
+  isPaid     Boolean @default(false)
+  pricePaise Int     @default(0)
+
+  status EventStatus @default(DRAFT)
+
+  clubId String
+  club   Club   @relation(fields: [clubId], references: [id], onDelete: Restrict)
+
+  createdById String
+  createdBy   Student @relation("EventCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clubId])
+  @@index([status, startAt])
+  @@index([createdById])
 }
