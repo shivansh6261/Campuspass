@@ -1,7 +1,7 @@
 
 import Navbar from "@/components/Navbar";
-import EventCard from "@/components/EventCard";
-import { events } from "@/lib/events";
+import LiveEvents from "@/components/LiveEvents";
+import { Suspense } from "react";
 
 export default function Home() {
   return (
@@ -13,9 +13,9 @@ export default function Home() {
         <section className="relative isolate overflow-hidden px-5 py-24 md:py-36">
 
           {/* Background glowing circles */}
-          <div className="pointer-events-none absolute -top-32 -left-32 -z-10 h-96 w-96 rounded-full bg-violet-600/30 blur-[110px]" />
+          <div className="pointer-events-none absolute -left-32 -top-32 -z-10 h-96 w-96 rounded-full bg-violet-600/30 blur-[110px]" />
 
-          <div className="pointer-events-none absolute top-20 -right-32 -z-10 h-96 w-96 rounded-full bg-cyan-500/20 blur-[110px]" />
+          <div className="pointer-events-none absolute -right-32 top-20 -z-10 h-96 w-96 rounded-full bg-cyan-500/20 blur-[110px]" />
 
           <div className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top,#172554_0%,#080D1D_65%)]" />
 
@@ -61,11 +61,19 @@ export default function Home() {
 
             {/* Feature Highlights */}
             <div className="mx-auto mt-20 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
-
               {[
-                { number: "01", title: "Discover Events" },
-                { number: "02", title: "Register Easily" },
-                { number: "03", title: "Get Digital Pass" },
+                {
+                  number: "01",
+                  title: "Discover Events",
+                },
+                {
+                  number: "02",
+                  title: "Register Easily",
+                },
+                {
+                  number: "03",
+                  title: "Get Digital Pass",
+                },
               ].map((item) => (
                 <div
                   key={item.number}
@@ -74,17 +82,18 @@ export default function Home() {
                   <h3 className="text-3xl font-bold text-cyan-400">
                     {item.number}
                   </h3>
+
                   <p className="mt-2 font-medium text-slate-200">
                     {item.title}
                   </p>
                 </div>
               ))}
-
             </div>
+
           </div>
         </section>
 
-        {/* EVENTS SECTION */}
+        {/* EVENTS SECTION - DATABASE POWERED */}
         <section
           id="events"
           className="relative scroll-mt-24 bg-[#0D1428] px-5 py-20"
@@ -109,21 +118,31 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Existing Event Cards */}
-            {events.length > 0 ? (
-              <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-                {events.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center text-slate-400">
-                No upcoming events yet. Stay tuned!
-              </div>
-            )}
+            {/* Fetch published events from Neon PostgreSQL */}
+            <Suspense
+              fallback={
+                <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+                  {[1, 2, 3].map((item) => (
+                    <div
+                      key={item}
+                      className="animate-pulse overflow-hidden rounded-2xl border border-white/10 bg-[#111B30]"
+                    >
+                      <div className="h-48 bg-white/10" />
+
+                      <div className="space-y-4 p-6">
+                        <div className="h-4 w-24 rounded bg-white/10" />
+                        <div className="h-7 w-3/4 rounded bg-white/10" />
+                        <div className="h-4 w-full rounded bg-white/10" />
+                        <div className="h-4 w-1/2 rounded bg-white/10" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              }
+            >
+              <LiveEvents />
+            </Suspense>
+
           </div>
         </section>
 
@@ -133,6 +152,7 @@ export default function Home() {
           className="scroll-mt-24 px-5 py-24"
         >
           <div className="mx-auto max-w-4xl text-center">
+
             <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-cyan-400">
               One Campus. Endless Possibilities.
             </p>
@@ -140,6 +160,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold md:text-5xl">
               Everything You Need.
               <br />
+
               <span className="text-violet-400">
                 One Platform.
               </span>
@@ -151,10 +172,12 @@ export default function Home() {
               register for activities, and access your
               digital passes with ease.
             </p>
+
           </div>
         </section>
       </main>
- 
+
+      {/* FOOTER */}
       <footer className="border-t border-white/10 px-5 py-8 text-center text-sm text-slate-500">
         © 2026 CampusPass • SGSITS Indore
       </footer>
