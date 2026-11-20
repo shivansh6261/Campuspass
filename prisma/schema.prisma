@@ -41,6 +41,16 @@ enum EventStatus {
   COMPLETED
 }
 
+enum PaymentOrderStatus {
+  RESERVED
+  ORDER_CREATED
+  PAID
+  FAILED
+  EXPIRED
+  REFUND_REQUIRED
+  REFUNDED
+}
+
 // ==========================================
 // STUDENT / USER
 // ==========================================
@@ -77,6 +87,9 @@ model Student {
 
   // Student event bookings
   registrations Registration[]
+
+  // paid Tickets
+  paymentOrders PaymentOrder[]
 
   // Tickets verified by this organizer
   verifiedCheckIns Registration[] @relation("CheckInVerifier")
@@ -199,8 +212,9 @@ model Event {
   capacity Int
 
   // Free / Paid event
-  isPaid     Boolean @default(false)
-  pricePaise Int     @default(0)
+  isPaid        Boolean        @default(false)
+  pricePaise    Int            @default(0)
+  paymentOrders PaymentOrder[]
 
   // Event status
   status EventStatus @default(DRAFT)
@@ -232,12 +246,12 @@ model Registration {
   id String @id @default(cuid())
 
   // Registered student
-  studentId String
-  student   Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
-
+  studentId    String
+  student      Student       @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  paymentOrder PaymentOrder?
   // Registered event
-  eventId String
-  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  eventId      String
+  event        Event         @relation(fields: [eventId], references: [id], onDelete: Restrict)
 
   // Registration timestamp
   createdAt DateTime @default(now())
@@ -261,4 +275,38 @@ model Registration {
   // Attendance queries
   @@index([eventId, checkedInAt])
   @@index([checkedInById])
+}
+
+//Razorpay 
+
+model PaymentOrder {
+  id String @id @default(cuid())
+
+  studentId String
+  eventId   String
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  razorpayOrderId   String? @unique
+  razorpayPaymentId String? @unique
+
+  amountPaise Int
+  currency    String @default("INR")
+
+  status PaymentOrderStatus @default(RESERVED)
+
+  // A seat is reserved only until this timestamp.
+  expiresAt DateTime
+
+  // Linked only after successful payment confirmation.
+  registrationId String?       @unique
+  registration   Registration? @relation(fields: [registrationId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId, eventId])
+  @@index([eventId, status, expiresAt])
+  @@index([status, createdAt])
 }

@@ -7,6 +7,7 @@ import { connection } from "next/server";
 import Navbar from "@/components/Navbar";
 import { prisma } from "@/lib/prisma";
 import RegisterButton from "./RegisterButton";
+import PaidBookingButton from "./PaidBookingButton";
 
 function formatDate(date) {
   return new Intl.DateTimeFormat("en-IN", {
@@ -240,24 +241,29 @@ async function EventDetailsContent({ params }) {
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400"
                       style={{
-                        width: `${
-                          event.capacity > 0
-                            ? Math.min(
-                                100,
-                                (bookedSeats / event.capacity) * 100
-                              )
-                            : 0
-                        }%`,
+                        width: `${event.capacity > 0
+                          ? Math.min(
+                            100,
+                            (bookedSeats / event.capacity) * 100
+                          )
+                          : 0
+                          }%`,
                       }}
                     />
                   </div>
 
                   <div className="mt-8">
-                    <RegisterButton
-                      eventId={event.id}
-                      canRegister={canRegister}
-                      disabledReason={disabledReason}
-                    />
+                    {event.isPaid ? (
+                      <PaidBookingButton
+                        eventId={event.id}
+                        eventTitle={event.title}
+                      />
+                    ) : (
+                      <RegisterButton
+                        eventId={event.id}
+                        canRegister={canRegister}
+                      />
+                    )}
                   </div>
                 </div>
               </aside>
