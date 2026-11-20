@@ -6,7 +6,7 @@ import { requireStudent } from "@/lib/authorization";
 
 async function StudentContent() {
   const student = await requireStudent();
-  
+
 
   return (
     <main className="min-h-screen bg-[#080D1D] px-5 py-12 text-white">
@@ -34,26 +34,41 @@ async function StudentContent() {
             </p>
           </Link>
 
-          <div className="rounded-2xl border border-white/10 bg-[#111B30] p-6">
+
+          <Link
+            href="/student/bookings"
+            className="group rounded-2xl border border-cyan-500/20 bg-[#111B30] p-6 transition duration-300 hover:-translate-y-1 hover:border-cyan-400 hover:bg-[#17233D]"
+          >
+            <div className="mb-4 text-3xl">
+              🎟️
+            </div>
+
             <h2 className="text-xl font-semibold">
               My Bookings
             </h2>
-            <p className="mt-2 text-sm text-slate-400">
-              Event registrations will appear here.
-            </p>
-          </div>
 
-<Link
-  href="/student/apply-organizer"
-  className="rounded-2xl border border-violet-500/20 bg-[#111B30] p-6 transition hover:border-violet-400"
->
-  <h2 className="text-xl font-semibold">
-    Become an Organizer
-  </h2>
-  <p className="mt-2 text-sm text-slate-400">
-    Apply to manage events for your college club.
-  </p>
-</Link>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              View your registered events, booking details,
+              and upcoming campus activities.
+            </p>
+
+            <p className="mt-5 font-semibold text-cyan-400 transition group-hover:translate-x-1">
+              View My Bookings →
+            </p>
+          </Link>
+
+
+          <Link
+            href="/student/apply-organizer"
+            className="rounded-2xl border border-violet-500/20 bg-[#111B30] p-6 transition hover:border-violet-400"
+          >
+            <h2 className="text-xl font-semibold">
+              Become an Organizer
+            </h2>
+            <p className="mt-2 text-sm text-slate-400">
+              Apply to manage events for your college club.
+            </p>
+          </Link>
 
         </div>
 

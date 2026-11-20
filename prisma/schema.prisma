@@ -7,9 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ====================================
+// ==========================================
 // ENUMS
-// ====================================
+// ==========================================
 
 enum VerificationStatus {
   PENDING
@@ -41,18 +41,19 @@ enum EventStatus {
   COMPLETED
 }
 
-// ====================================
-// STUDENT
-// ====================================
+// ==========================================
+// STUDENT / USER
+// ==========================================
 
 model Student {
-  id           String @id @default(cuid())
-  name         String
-  email        String @unique
-  enrollment   String @unique
-  phone        String
-  department   String
-  year         String
+  id         String @id @default(cuid())
+  name       String
+  email      String @unique
+  enrollment String @unique
+  phone      String
+  department String
+  year       String
+
   passwordHash String
 
   emailVerifiedAt    DateTime?
@@ -62,11 +63,23 @@ model Student {
   role          UserRole      @default(STUDENT)
   accountStatus AccountStatus @default(ACTIVE)
 
-  sessions          Session[]
-  clubMemberships   ClubMembership[]
+  // Authentication
+  sessions Session[]
+
+  // Clubs and organizer permissions
+  clubMemberships ClubMembership[]
+
   organizerRequests OrganizerRequest[] @relation("OrganizerApplicant")
   reviewedRequests  OrganizerRequest[] @relation("OrganizerReviewer")
-  createdEvents     Event[]            @relation("EventCreator")
+
+  // Events created by organizers
+  createdEvents Event[] @relation("EventCreator")
+
+  // Student event bookings
+  registrations Registration[]
+
+  // Tickets verified by this organizer
+  verifiedCheckIns Registration[] @relation("CheckInVerifier")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,9 +88,9 @@ model Student {
   @@index([accountStatus])
 }
 
-// ====================================
-// SESSION
-// ====================================
+// ==========================================
+// SESSION / AUTHENTICATION
+// ==========================================
 
 model Session {
   id        String @id @default(cuid())
@@ -94,9 +107,9 @@ model Session {
   @@index([expiresAt])
 }
 
-// ====================================
+// ==========================================
 // CLUB
-// ====================================
+// ==========================================
 
 model Club {
   id          String  @id @default(cuid())
@@ -115,9 +128,9 @@ model Club {
   updatedAt DateTime @updatedAt
 }
 
-// ====================================
+// ==========================================
 // CLUB MEMBERSHIP
-// ====================================
+// ==========================================
 
 model ClubMembership {
   id        String @id @default(cuid())
@@ -127,19 +140,19 @@ model ClubMembership {
   student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
   club    Club    @relation(fields: [clubId], references: [id], onDelete: Restrict)
 
-  isActive   Boolean  @default(true)
-  approvedAt DateTime @default(now())
+  isActive Boolean @default(true)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  approvedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@unique([studentId, clubId])
   @@index([clubId, isActive])
 }
 
-// ====================================
+// ==========================================
 // ORGANIZER REQUEST
-// ====================================
+// ==========================================
 
 model OrganizerRequest {
   id        String @id @default(cuid())
@@ -166,35 +179,42 @@ model OrganizerRequest {
   @@index([clubId, status])
 }
 
-// ====================================
+// ==========================================
 // EVENT
-// ====================================
+// ==========================================
 
 model Event {
-  id String @id @default(cuid())
-
+  id          String  @id @default(cuid())
   title       String
   description String  @db.Text
   bannerUrl   String?
+  venue       String
 
-  venue String
-
+  // Event schedule
   startAt              DateTime
   endAt                DateTime
   registrationDeadline DateTime
 
+  // Seat capacity
   capacity Int
 
+  // Free / Paid event
   isPaid     Boolean @default(false)
   pricePaise Int     @default(0)
 
+  // Event status
   status EventStatus @default(DRAFT)
 
+  // Organizing club
   clubId String
   club   Club   @relation(fields: [clubId], references: [id], onDelete: Restrict)
 
+  // Event creator
   createdById String
   createdBy   Student @relation("EventCreator", fields: [createdById], references: [id], onDelete: Restrict)
+
+  // Student registrations
+  registrations Registration[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -202,4 +222,43 @@ model Event {
   @@index([clubId])
   @@index([status, startAt])
   @@index([createdById])
+}
+
+// ==========================================
+// EVENT REGISTRATION / QR TICKET
+// ==========================================
+
+model Registration {
+  id String @id @default(cuid())
+
+  // Registered student
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+
+  // Registered event
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  // Registration timestamp
+  createdAt DateTime @default(now())
+
+  // ========================================
+  // QR CHECK-IN / ATTENDANCE
+  // ========================================
+
+  // Null means the ticket has not been used.
+  checkedInAt DateTime?
+
+  // Organizer who verified the ticket
+  checkedInById String?
+  checkedInBy   Student? @relation("CheckInVerifier", fields: [checkedInById], references: [id], onDelete: SetNull)
+
+  // Prevent duplicate registrations
+  @@unique([studentId, eventId])
+  // Booking queries
+  @@index([eventId])
+  @@index([studentId, createdAt])
+  // Attendance queries
+  @@index([eventId, checkedInAt])
+  @@index([checkedInById])
 }

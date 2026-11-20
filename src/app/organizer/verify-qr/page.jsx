@@ -4,13 +4,14 @@ import Link from "next/link";
 
 import Navbar from "@/components/Navbar";
 import { requireOrganizer } from "@/lib/authorization";
+import QRScanner from "./QRScanner";
 
-async function QRVerificationContent() {
+async function VerifyQRContent() {
   await requireOrganizer();
 
   return (
     <main className="min-h-screen bg-[#080D1D] px-5 py-12 text-white">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-3xl">
         <Link
           href="/organizer"
           className="text-sm text-cyan-400"
@@ -18,39 +19,40 @@ async function QRVerificationContent() {
           ← Organizer Dashboard
         </Link>
 
-        <h1 className="mt-8 text-3xl font-bold">
-          QR Ticket Verification
-        </h1>
+        <div className="mt-8">
+          <p className="text-sm font-semibold uppercase tracking-widest text-cyan-400">
+            CampusPass Event Entry
+          </p>
 
-        <p className="mt-3 text-slate-400">
-          Verify student tickets during event check-in.
-        </p>
+          <h1 className="mt-3 text-3xl font-extrabold md:text-5xl">
+            QR Ticket Verification
+          </h1>
 
-        <div className="mt-10 rounded-2xl border border-white/10 bg-[#111B30] p-10 text-center">
-          <div className="text-5xl">📱</div>
-
-          <h2 className="mt-5 text-xl font-semibold">
-            QR Verification
-          </h2>
-
-          <p className="mx-auto mt-3 max-w-lg text-slate-400">
-            QR scanning and secure ticket verification
-            are not implemented yet. This page will
-            eventually support validating tickets and
-            recording student check-ins.
+          <p className="mt-4 mb-10 text-slate-400">
+            Securely verify registered students and
+            mark their attendance at your club events.
           </p>
         </div>
+
+        <QRScanner />
       </div>
     </main>
   );
 }
 
-export default function QRVerificationPage() {
+export default function VerifyQRPage() {
   return (
     <>
       <Navbar />
-      <Suspense fallback={<div className="p-10">Loading...</div>}>
-        <QRVerificationContent />
+
+      <Suspense
+        fallback={
+          <div className="min-h-screen bg-[#080D1D] p-10 text-slate-400">
+            Loading QR verification...
+          </div>
+        }
+      >
+        <VerifyQRContent />
       </Suspense>
     </>
   );
